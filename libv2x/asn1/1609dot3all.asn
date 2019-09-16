@@ -1,0 +1,618 @@
+CITSapplMgmtIDs {iso(1) standard(0) cits-applMgmt (17419) ids (1) version1 (1)} 
+DEFINITIONS AUTOMATIC TAGS ::= BEGIN
+-- Warning: Module is still under development
+IMPORTS
+;
+
+-- VarLengthNumber
+
+VarLengthNumber::=CHOICE{
+	content		[0]	INTEGER(0..127), -- one octet length
+	extension	[1]	Ext1
+	}
+
+Ext1::=CHOICE{
+	content		[0]	INTEGER(128..16511), -- two octets length
+	extension	[1]	Ext2
+}
+
+Ext2::=CHOICE{
+	content		[0]	INTEGER(16512..2113663), -- three octets length
+	extension	[1]	Ext3
+	}
+
+Ext3::=INTEGER(2113664..270549119,...) -- four and more octets length
+
+VarLengthNumber2::=CHOICE{
+	shortNo	[0] INTEGER(0..127),
+	longNo	[1] INTEGER(0..32767)
+	}
+
+version INTEGER(0..255)::=1 -- version of this module
+
+END
+
+
+IEEE-1609-3-WEE {iso(1) identified-organization(3) ieee(111) standards-association-numbered-series-standards(2) wave-stds(1609) dot3(3) wee(1) version0(0)}
+DEFINITIONS AUTOMATIC TAGS ::= BEGIN
+
+IMPORTS
+;
+
+-- WAVE Extension Elements CLASS and reference value definitions 
+-- CLASS
+EXT-TYPE ::= CLASS {
+  &extRef RefExt UNIQUE,
+  &ExtValue
+  }
+  WITH SYNTAX {&ExtValue IDENTIFIED BY &extRef}
+
+-- General extension (profiling)
+-- Extension {EXT-TYPE : ExtensionTypes} ::= SEQUENCE {
+--   extensionId EXT-TYPE.&extRef({ExtensionTypes}),
+--   value   EXT-TYPE.&ExtValue({ExtensionTypes}{@.extensionId})
+--   }
+-- ExtensionTypes are specified for WSA and WSM
+
+-- Reference values (for all types of extensions)
+RefExt ::= INTEGER(0..255)
+
+c-Reserved  RefExt ::= 0
+c-TxPowerUsed80211  RefExt ::= 4 -- WSM
+c-2Dlocation    RefExt ::= 5 -- WSA Header
+c-3Dlocation    RefExt ::= 6 -- WSA Header
+c-advertiserID  RefExt ::= 7 -- WSA Header
+c-ProviderServContext   RefExt ::= 8 -- WSA Service Info
+c-IPv6Address   RefExt ::= 9 -- WSA Service Info
+c-servicePort   RefExt ::= 10 -- WSA Service Info
+c-ProviderMACaddress    RefExt ::= 11 -- WSA Service Info
+c-EDCAparameterSet  RefExt ::= 12 -- WSA Channel Info
+c-SecondaryDNS  RefExt ::= 13 -- WSA Routing Advertisement
+c-GatewayMACaddress RefExt ::= 14 -- WSA Routing Advertisement
+c-ChannelNumber80211    RefExt ::= 15 -- WSM
+c-DataRate80211 RefExt ::= 16 -- WSM
+c-RepeatRate    RefExt ::= 17 -- WSA Header
+c-RCPIthreshold RefExt ::= 19 -- WSA Service Info
+c-WSAcountThreshold RefExt ::= 20 -- WSA Service Info
+c-ChannelAccess RefExt ::= 21 -- WSA Channel Info
+c-WSAcountThresInt  RefExt ::= 22 -- WSA Service Info
+c-ChannelLoad   RefExt ::= 23 -- WSM-N-Header. 
+-- ChannelLoad is not specified in this standard.
+-- reserved for ISO RefExt in the range 80 to 120
+-- all other values of RefExt are reserved
+
+
+-- WSM extension elements
+
+DataRate80211 ::= INTEGER (0..255)
+
+TXpower80211 ::= INTEGER (-128..127)
+
+ChannelNumber80211 ::= INTEGER (0..255)
+
+--WSA message header extension elements
+
+RepeatRate ::= INTEGER (0..255)
+
+D3TwoDLocation ::= SEQUENCE {
+    latitude    D3Latitude,
+    longitude   D3Longitude
+    }
+
+D3ThreeDLocation ::= SEQUENCE {
+    latitude    D3Latitude,
+    longitude   D3Longitude,
+    elevation   D3Elevation
+    }
+
+-- max. 32 octets are allowed in AdvertiserIdentifier!!!
+-- The 32 characters may produce more than 32 octets in UPER
+AdvertiserIdentifier ::= UTF8String (SIZE (1..32))
+
+--ServiceInfo extension elements
+-- Note: The size constraint has to be (0..255) although the PSC may
+-- consist of maximum 31 octets!
+-- ProviderServiceContext ::= OCTET STRING(SIZE(0..255)) 
+-- alternatively in order to get the size constraint checking
+ProviderServiceContext ::= SEQUENCE{
+    fillBit BIT STRING (SIZE(3)), -- all bits set to zero!
+    psc OCTET STRING (SIZE(0..31)) -- size zero is not recommended
+    }
+    
+
+IPv6Address ::= OCTET STRING (SIZE (16))
+
+ServicePort ::= INTEGER (0..65535)
+
+ProviderMacAddress ::= MACaddress
+
+MACaddress ::= OCTET STRING (SIZE(6))
+
+RcpiThreshold ::= INTEGER (0..255) -- see IEEE Std 802.11
+
+WsaCountThreshold ::= INTEGER (0..255)
+
+WsaCountThresholdInterval ::= INTEGER (0..255) -- value 0 is not used
+
+--ChannelInfo extension elements
+EdcaParameterSet ::= SEQUENCE{
+  acbeRecord  EdcaParameterRecord,
+  acbkRecord  EdcaParameterRecord,
+  acviRecord  EdcaParameterRecord,
+  acvoRecord  EdcaParameterRecord
+  }
+
+EdcaParameterRecord ::= SEQUENCE {
+  res INTEGER (0..1),
+  aci INTEGER (0..3),
+  acm     INTEGER (0..1),
+  aifsn   INTEGER (0..15),
+  ecwMax  INTEGER (0..15),    -- ecwMax is the exponent in CWmax = 2^ecwMax-1
+  ecwMin  INTEGER (0..15),
+  txopLimit   INTEGER (0..65535)
+  }
+
+ChannelAccess80211 ::= INTEGER {
+  continuous  (0),
+  alternatingSCH  (1),
+  alternatingCCH  (2)
+} (0..255)
+
+
+--RoutingAdvertisement extension elements
+
+SecondaryDns ::= IPv6Address
+
+GatewayMacAddress ::= MACaddress
+
+D3Latitude ::= SEQUENCE{
+    fill    BIT STRING (SIZE(1)), -- set to '0' (MSB of Latitude)
+    lat     INTEGER (-900000000..900000001) -- in 0,1 micro degree, Providing a range of plus-minus 90 degrees 
+    }
+
+-- Longitude ::= INTEGER (-1800000000..1800000001) as defined in 1609.3
+D3Longitude ::= INTEGER (-1799999999..1800000001) -- changed to J2735 definition
+-- 1/10 micro degree
+-- Providing a range of plus-minus 180 degrees
+
+D3Elevation ::= INTEGER (-4096..61439)
+-- In units of 10 cm steps above or below the reference ellipsoid
+-- Providing a range of -409.5 to + 6143.9 meters
+-- The value -4096 shall be used when Unknown is to be sent
+
+
+END
+
+
+IEEE-1609-3-WSM {iso(1) identified-organization(3) ieee(111) standards-association-numbered-series-standards(2) wave-stds(1609) dot3(3) wsm(2) version0(0)}
+DEFINITIONS AUTOMATIC TAGS ::= BEGIN
+
+IMPORTS
+VarLengthNumber FROM CITSapplMgmtIDs {iso(1) standard(0) cits-applMgmt (17419) ids (1) version1 (1)} -- this is the p-encoded PSID
+-- EXT-TYPE, Extension,RefExt,c-ChannelLoad, c-Reserved, c-TxPowerUsed80211, c-DataRate80211, c-ChannelNumber80211, ChannelNumber80211, DataRate80211, TXpower80211 FROM IEEE-1609-3-WEE {iso(1) identified-organization(3) ieee(111) standards-association-numbered-series-standards(2) wave-stds(1609) dot3(3) wee(1) version0(0)}
+EXT-TYPE, RefExt, c-ChannelLoad, c-Reserved, c-TxPowerUsed80211, c-DataRate80211, c-ChannelNumber80211, ChannelNumber80211, DataRate80211, TXpower80211 FROM IEEE-1609-3-WEE {iso(1) identified-organization(3) ieee(111) standards-association-numbered-series-standards(2) wave-stds(1609) dot3(3) wee(1) version0(0)}
+;
+
+-- WSM
+
+ShortMsgNpdu ::= SEQUENCE { 
+	subtype	ShortMsgSubtype, -- TPID is part of transport
+	transport	ShortMsgTpdus,
+	body	ShortMsgData -- including two octet length field
+	}
+
+-- Sub-Types
+-- With UPER, the below 16 choices produce a 4 bit tag number (0 .. 15) 
+-- choices of type NoSubtypeProcessing cannot be processed
+ShortMsgSubtype ::= CHOICE{
+	nullNetworking	  [0] NullNetworking,
+	subTypeReserved1	[1] NoSubtypeProcessing, -- reserved for ISO
+	subTypeReserved2	[2] NoSubtypeProcessing, -- reserved for ISO
+	subTypeReserved3	[3] NoSubtypeProcessing, -- reserved for ISO
+	subTypeReserved4	[4] NoSubtypeProcessing, -- reserved for ISO
+	subTypeReserved5	[5] NoSubtypeProcessing, -- reserved for ISO
+	subTypeReserved6	[6] NoSubtypeProcessing, -- reserved for ISO
+	subTypeReserved7	[7] NoSubtypeProcessing, -- reserved for ISO
+	subTypeReserved8	[8] NoSubtypeProcessing,
+	subTypeReserved9	[9] NoSubtypeProcessing,
+	subTypeReserved19	[10] NoSubtypeProcessing,
+	subTypeReserved11	[11] NoSubtypeProcessing,
+	subTypeReserved12	[12] NoSubtypeProcessing,
+	subTypeReserved13	[13] NoSubtypeProcessing,
+	subTypeReserved14	[14] NoSubtypeProcessing,
+	subTypeReserved15	[15] NoSubtypeProcessing
+	}
+
+NoSubtypeProcessing ::= SEQUENCE{
+	optBit	BIT STRING (SIZE(1)),  -- always set to '0'b
+	version	ShortMsgVersion -- set to c-shortMsgVersionNo
+	}
+
+ShortMsgVersion ::= INTEGER (0..7)
+
+-- Version number indicating the WSMP specification in this document
+c-shortMsgVersionNo	ShortMsgVersion ::= 3
+
+NullNetworking::= SEQUENCE{
+	version	ShortMsgVersion, -- set to c-shortMsgVersionNo
+	nExtensions	ShortMsgNextensions OPTIONAL
+	}
+
+-- networking extensions
+-- Sequence of 0 to n extension elements
+ShortMsgNextensions ::= SEQUENCE OF ShortMsgNextension
+
+-- A single extension element
+-- ShortMsgNextension::= Extension{{ShortMsgNextTypes}}
+ShortMsgNextension ::= SEQUENCE {
+  extensionId EXT-TYPE.&extRef({ShortMsgNextTypes}),
+  value       EXT-TYPE.&ExtValue({ShortMsgNextTypes}{@.extensionId})
+  }
+
+-- all available N-Extensions
+ShortMsgNextTypes EXT-TYPE::={
+	{ TXpower80211	IDENTIFIED BY c-TxPowerUsed80211 } |
+	{ ChannelNumber80211	IDENTIFIED BY c-ChannelNumber80211 } |
+	{ DataRate80211	IDENTIFIED BY c-DataRate80211 },
+-- {ChannelLoad  IDENTIFIED BY c-ChannelLoad} ,
+-- ChannelLoad is not specified in this standard.
+	...
+	}
+
+-- Transport protocol header choices (TPID)
+-- With UPER, the below 128 choices produce a 7 bit tag number (0 .. 127)
+-- choices of type NoTpidProcessing cannot be processed
+ShortMsgTpdus ::= CHOICE{
+ 	bcMode	      [0] ShortMsgBcPDU,
+	tpidReserved1	[1] NoTpidProcessing, -- reserved for ISO
+	tpidReserved2	[2] NoTpidProcessing, -- reserved for ISO
+	tpidReserved3	[3] NoTpidProcessing, -- reserved for ISO
+	tpidReserved4	[4] NoTpidProcessing, -- reserved for ISO
+	tpidReserved5	[5] NoTpidProcessing, -- reserved for ISO
+	tpidReserved6	[6] NoTpidProcessing, -- reserved for ISO
+	tpidReserved7	[7] NoTpidProcessing, -- reserved for ISO
+	tpidReserved8	[8] NoTpidProcessing, -- reserved for ISO
+	tpidReserved9	[9] NoTpidProcessing, -- reserved for ISO
+	tpidReserved10	[10] NoTpidProcessing, -- reserved for ISO
+	tpidReserved11	[11] NoTpidProcessing,
+	tpidReserved12	[12] NoTpidProcessing,
+	tpidReserved13	[13] NoTpidProcessing,
+	tpidReserved14	[14] NoTpidProcessing,
+	tpidReserved15	[15] NoTpidProcessing,
+	tpidReserved16	[16] NoTpidProcessing,
+	tpidReserved17	[17] NoTpidProcessing,
+	tpidReserved18	[18] NoTpidProcessing,
+	tpidReserved19	[19] NoTpidProcessing,
+	tpidReserved20	[20] NoTpidProcessing,
+	tpidReserved21	[21] NoTpidProcessing,
+	tpidReserved22	[22] NoTpidProcessing,
+	tpidReserved23	[23] NoTpidProcessing,
+	tpidReserved24	[24] NoTpidProcessing,
+	tpidReserved25	[25] NoTpidProcessing,
+	tpidReserved26	[26] NoTpidProcessing,
+	tpidReserved27	[27] NoTpidProcessing,
+	tpidReserved28	[28] NoTpidProcessing,
+	tpidReserved29	[29] NoTpidProcessing,
+	tpidReserved30	[30] NoTpidProcessing,
+	tpidReserved31	[31] NoTpidProcessing,
+	tpidReserved32	[32] NoTpidProcessing,
+	tpidReserved33	[33] NoTpidProcessing,
+	tpidReserved34	[34] NoTpidProcessing,
+	tpidReserved35	[35] NoTpidProcessing,
+	tpidReserved36	[36] NoTpidProcessing,
+	tpidReserved37	[37] NoTpidProcessing,
+	tpidReserved38	[38] NoTpidProcessing,
+	tpidReserved39	[39] NoTpidProcessing,
+	tpidReserved40	[40] NoTpidProcessing,
+	tpidReserved41	[41] NoTpidProcessing,
+	tpidReserved42	[42] NoTpidProcessing,
+	tpidReserved43	[43] NoTpidProcessing,
+	tpidReserved44	[44] NoTpidProcessing,
+	tpidReserved45	[45] NoTpidProcessing,
+	tpidReserved46	[46] NoTpidProcessing,
+	tpidReserved47	[47] NoTpidProcessing,
+	tpidReserved48	[48] NoTpidProcessing,
+	tpidReserved49	[49] NoTpidProcessing,
+	tpidReserved50	[50] NoTpidProcessing,
+	tpidReserved51	[51] NoTpidProcessing,
+	tpidReserved52	[52] NoTpidProcessing,
+	tpidReserved53	[53] NoTpidProcessing,
+	tpidReserved54	[54] NoTpidProcessing,
+	tpidReserved55	[55] NoTpidProcessing,
+	tpidReserved56	[56] NoTpidProcessing,
+	tpidReserved57	[57] NoTpidProcessing,
+	tpidReserved58	[58] NoTpidProcessing,
+	tpidReserved59	[59] NoTpidProcessing,
+	tpidReserved60	[60] NoTpidProcessing,
+	tpidReserved61	[61] NoTpidProcessing,
+	tpidReserved62	[62] NoTpidProcessing,
+	tpidReserved63	[63] NoTpidProcessing,
+	tpidReserved64	[64] NoTpidProcessing,
+	tpidReserved65	[65] NoTpidProcessing,
+	tpidReserved66	[66] NoTpidProcessing,
+	tpidReserved67	[67] NoTpidProcessing,
+	tpidReserved68	[68] NoTpidProcessing,
+	tpidReserved69	[69] NoTpidProcessing,
+	tpidReserved70	[70] NoTpidProcessing,
+	tpidReserved71	[71] NoTpidProcessing,
+	tpidReserved72	[72] NoTpidProcessing,
+	tpidReserved73	[73] NoTpidProcessing,
+	tpidReserved74	[74] NoTpidProcessing,
+	tpidReserved75	[75] NoTpidProcessing,
+	tpidReserved76	[76] NoTpidProcessing,
+	tpidReserved77	[77] NoTpidProcessing,
+	tpidReserved78	[78] NoTpidProcessing,
+	tpidReserved79	[79] NoTpidProcessing,
+	tpidReserved80	[80] NoTpidProcessing,
+	tpidReserved81	[81] NoTpidProcessing,
+	tpidReserved82	[82] NoTpidProcessing,
+	tpidReserved83	[83] NoTpidProcessing,
+	tpidReserved84	[84] NoTpidProcessing,
+	tpidReserved85	[85] NoTpidProcessing,
+	tpidReserved86	[86] NoTpidProcessing,
+	tpidReserved87	[87] NoTpidProcessing,
+	tpidReserved88	[88] NoTpidProcessing,
+	tpidReserved89	[89] NoTpidProcessing,
+	tpidReserved90	[90] NoTpidProcessing,
+	tpidReserved91	[91] NoTpidProcessing,
+	tpidReserved92	[92] NoTpidProcessing,
+	tpidReserved93	[93] NoTpidProcessing,
+	tpidReserved94	[94] NoTpidProcessing,
+	tpidReserved95	[95] NoTpidProcessing,
+	tpidReserved96	[96] NoTpidProcessing,
+	tpidReserved97	[97] NoTpidProcessing,
+	tpidReserved98	[98] NoTpidProcessing,
+	tpidReserved99	[99] NoTpidProcessing,
+	tpidReserved100	[100] NoTpidProcessing,
+	tpidReserved101	[101] NoTpidProcessing,
+	tpidReserved102	[102] NoTpidProcessing,
+	tpidReserved103	[103] NoTpidProcessing,
+	tpidReserved104	[104] NoTpidProcessing,
+	tpidReserved105	[105] NoTpidProcessing,
+	tpidReserved106	[106] NoTpidProcessing,
+	tpidReserved107	[107] NoTpidProcessing,
+	tpidReserved108	[108] NoTpidProcessing,
+	tpidReserved109	[109] NoTpidProcessing,
+	tpidReserved110	[110] NoTpidProcessing,
+	tpidReserved111	[111] NoTpidProcessing,
+	tpidReserved112	[112] NoTpidProcessing,
+	tpidReserved113	[113] NoTpidProcessing,
+	tpidReserved114	[114] NoTpidProcessing,
+	tpidReserved115	[115] NoTpidProcessing,
+	tpidReserved116	[116] NoTpidProcessing,
+	tpidReserved117	[117] NoTpidProcessing,
+	tpidReserved118	[118] NoTpidProcessing,
+	tpidReserved119	[119] NoTpidProcessing,
+	tpidReserved120	[120] NoTpidProcessing,
+	tpidReserved121	[121] NoTpidProcessing,
+	tpidReserved122	[122] NoTpidProcessing,
+	tpidReserved123	[123] NoTpidProcessing,
+	tpidReserved124	[124] NoTpidProcessing,
+	tpidReserved125	[125] NoTpidProcessing,
+	tpidReserved126	[126] NoTpidProcessing,
+	tpidReserved127	[127] NoTpidProcessing
+	}
+
+NoTpidProcessing::=BIT STRING (SIZE(1)) 
+
+ShortMsgBcPDU::=SEQUENCE{
+	destAddress	VarLengthNumber, -- that is PSID / ITS-AID
+	tExtensions	ShortMsgTextensions OPTIONAL
+	}
+
+-- Payload length and data
+ShortMsgData::=OCTET STRING
+-- maximum size is given by access technology
+
+-- transport extensions
+-- Sequence of 0 to n T-Extension elements
+ShortMsgTextensions::=SEQUENCE OF ShortMsgTextension
+
+-- a single T-Extension element
+-- ShortMsgTextension::= Extension{{ShortMsgTextTypes}}
+ShortMsgTextension::= SEQUENCE {
+  extensionId EXT-TYPE.&extRef({ShortMsgTextTypes}),
+  value   EXT-TYPE.&ExtValue({ShortMsgTextTypes}{@.extensionId})
+  }
+
+-- all available T-Extensions
+-- none is defined so far. Once a single one is defined, the below DummyExtension can be removed
+ShortMsgTextTypes EXT-TYPE::={
+	{ DummyExtension	IDENTIFIED BY c-Reserved },
+	...
+	}
+
+DummyExtension ::= NULL
+
+END
+
+
+IEEE-1609-3-WSA {iso(1) identified-organization(3) ieee(111) standards-association-numbered-series-standards(2) wave-stds(1609) dot3(3) wsa(3) version0(0)}
+DEFINITIONS AUTOMATIC TAGS ::= 
+BEGIN
+
+IMPORTS
+VarLengthNumber FROM CITSapplMgmtIDs {iso(1) standard(0) cits-applMgmt (17419) ids (1) version1 (1)} 
+-- EXT-TYPE, Extension, RefExt, c-Reserved, c-RepeatRate,c-TxPowerUsed80211, c-2Dlocation, c-3Dlocation, c-advertiserID, c-IPv6Address, c-servicePort,c-EDCAparameterSet, c-ChannelAccess, c-SecondaryDNS, c-GatewayMACaddress,  c-ProviderMACaddress, c-RCPIthreshold, c-WSAcountThreshold, c-WSAcountThresInt, c-ProviderServContext, RepeatRate, TwoDLocation, ThreeDLocation, AdvertiserIdentifier, ProviderServiceContext, EdcaParameterSet, ChannelAccess80211, SecondaryDns,GatewayMacAddress, IPv6Address, TXpower80211, DataRate80211, ChannelNumber80211, ServicePort, ProviderMacAddress, RcpiThreshold, WsaCountThreshold, WsaCountThresholdInterval FROM IEEE-1609-3-WEE {iso(1) identified-organization(3) ieee(111) standards-association-numbered-series-standards(2) wave-stds(1609) dot3(3) wee(1) version0(0)}
+EXT-TYPE, RefExt, c-Reserved, c-RepeatRate,c-TxPowerUsed80211, c-2Dlocation, c-3Dlocation, c-advertiserID, c-IPv6Address, c-servicePort,c-EDCAparameterSet, c-ChannelAccess, c-SecondaryDNS, c-GatewayMACaddress,  c-ProviderMACaddress, c-RCPIthreshold, c-WSAcountThreshold, c-WSAcountThresInt, c-ProviderServContext, RepeatRate, D3TwoDLocation, D3ThreeDLocation, AdvertiserIdentifier, ProviderServiceContext, EdcaParameterSet, ChannelAccess80211, SecondaryDns,GatewayMacAddress, IPv6Address, TXpower80211, DataRate80211, ChannelNumber80211, ServicePort, ProviderMacAddress, RcpiThreshold, WsaCountThreshold, WsaCountThresholdInterval FROM IEEE-1609-3-WEE {iso(1) identified-organization(3) ieee(111) standards-association-numbered-series-standards(2) wave-stds(1609) dot3(3) wee(1) version0(0)}
+;
+
+-- WSA message
+SrvAdvMsg ::= SEQUENCE { 
+	version 	SrvAdvPrtVersion, -- WSA version
+	body	SrvAdvBody
+	}
+
+SrvAdvPrtVersion ::= SEQUENCE{
+	messageID	SrvAdvMessageType, -- always set to 0
+	rsvAdvPrtVersion	RsvAdvPrtVersion -- Set to c-rsvAdvPrtVersionNo
+	}
+
+RsvAdvPrtVersion ::= INTEGER (0..7) -- Protocol version
+
+-- Version number indicating the WSA specification in this document
+c-rsvAdvPrtVersionNo	INTEGER (0..7)::=3 -- actual version number of WSA
+
+SrvAdvMessageType ::= INTEGER{
+	saMessage	(0), -- WSA message in IEEE 1609.3, SAM in ISO 24102-5
+	sarMessage	(1) -- SAR message used in ISO 24102-5
+	} (0..1)
+
+SrvAdvBody ::= SEQUENCE{
+	changeCount	SrvAdvChangeCount,
+	extensions	SrvAdvMsgHeaderExts OPTIONAL,
+	serviceInfos	ServiceInfos OPTIONAL,
+	channelInfos	ChannelInfos OPTIONAL,
+	routingAdvertisement	RoutingAdvertisement OPTIONAL
+	}
+	
+
+SrvAdvChangeCount ::= SEQUENCE{
+	saID	SrvAdvID,
+	contentCount	SrvAdvContentCount
+	}
+
+SrvAdvID ::= INTEGER(0..15)
+
+SrvAdvContentCount ::= INTEGER(0..15)
+	
+-- WSA header extensions
+SrvAdvMsgHeaderExts::= SEQUENCE OF SrvAdvMsgHeaderExt
+
+-- SrvAdvMsgHeaderExt ::= Extension {{SrvAdvMsgHeaderExtTypes}}
+SrvAdvMsgHeaderExt ::= SEQUENCE {
+  extensionId EXT-TYPE.&extRef({SrvAdvMsgHeaderExtTypes}),
+  value   EXT-TYPE.&ExtValue({SrvAdvMsgHeaderExtTypes}{@.extensionId})
+  }
+
+SrvAdvMsgHeaderExtTypes EXT-TYPE ::= {
+	{ RepeatRate 	IDENTIFIED BY c-RepeatRate } |
+	{ D3TwoDLocation 	IDENTIFIED BY c-2Dlocation } |
+	{ D3ThreeDLocation IDENTIFIED BY c-3Dlocation} |
+	{ AdvertiserIdentifier 	IDENTIFIED BY c-advertiserID } ,
+	...
+	}
+
+-- Service Info List
+ServiceInfos ::= SEQUENCE OF ServiceInfo -- '0' size allows to send only a routing advertisement
+
+ServiceInfo ::= SEQUENCE {
+	serviceID	VarLengthNumber, -- PSID
+	channelIndex	ChannelIndex, -- 5 bits
+	chOptions	ChannelOptions 
+	}
+
+ChannelOptions ::= SEQUENCE{
+	mandApp	MandApp OPTIONAL, -- in WSA set to '0'b
+	serviceProviderPort	ReplyAddress OPTIONAL, -- in WSA set to '0'b
+	extensions	ServiceInfoExts OPTIONAL 
+	}
+
+ChannelIndex ::= INTEGER {
+	notUsed	    (0), -- ChannelInfos is not used 
+	firstEntry	(1)
+	}(0..31)
+
+-- Dummy ReplyAddress as long as port numbers are not used
+ReplyAddress ::= NULL -- never used
+
+-- Dummy MandApp as long as this feature is not used
+MandApp ::= NULL
+
+-- Service Info Extensions
+ServiceInfoExts ::= SEQUENCE OF ServiceInfoExt
+
+-- ServiceInfoExt ::= Extension {{ServiceInfoExtTypes}}
+ServiceInfoExt ::= SEQUENCE {
+  extensionId EXT-TYPE.&extRef({ServiceInfoExtTypes}),
+  value   EXT-TYPE.&ExtValue({ServiceInfoExtTypes}{@.extensionId})
+  }
+
+ServiceInfoExtTypes EXT-TYPE ::= {
+	{ ProviderServiceContext	IDENTIFIED BY c-ProviderServContext } |
+	{ IPv6Address	IDENTIFIED BY c-IPv6Address } |
+	{ ServicePort	IDENTIFIED BY c-servicePort} |
+	{ ProviderMacAddress	IDENTIFIED BY c-ProviderMACaddress } |
+	{ RcpiThreshold	IDENTIFIED BY c-RCPIthreshold } |
+	{ WsaCountThreshold	IDENTIFIED BY c-WSAcountThreshold } |
+	{ WsaCountThresholdInterval IDENTIFIED BY c-WSAcountThresInt },
+	...
+	}
+
+-- Channel Info List
+ChannelInfos ::= SEQUENCE OF ChannelInfo
+
+ChannelInfo ::= SEQUENCE{
+	operatingClass	OperatingClass80211,
+	channelNumber	ChannelNumber80211,
+	powerLevel	TXpower80211,
+	dataRate	WsaChInfoDataRate,
+	extensions	ChInfoOptions
+	}
+
+OperatingClass80211 ::= INTEGER (0..255)
+
+WsaChInfoDataRate ::= SEQUENCE{
+	adaptable	BIT STRING (SIZE(1)),
+	dataRate	INTEGER (0..127)
+	}
+
+ChInfoOptions ::= SEQUENCE{
+	option1	NULL OPTIONAL, -- not used
+	option2	NULL OPTIONAL, -- not used
+	option3	NULL OPTIONAL, -- not used
+	option4	NULL OPTIONAL, -- not used
+	option5	NULL OPTIONAL, -- not used
+	option6	NULL OPTIONAL, -- not used
+	option7	NULL OPTIONAL, -- not used
+	extensions	ChannelInfoExts OPTIONAL
+	} -- this is the one octet "Channel Info Option Indicator"
+
+
+-- Channel Info extensions
+ChannelInfoExts ::= SEQUENCE OF ChannelInfoExt
+
+-- ChannelInfoExt ::= Extension {{ChannelInfoExtTypes}}
+ChannelInfoExt ::= SEQUENCE {
+  extensionId EXT-TYPE.&extRef({ChannelInfoExtTypes}),
+  value   EXT-TYPE.&ExtValue({ChannelInfoExtTypes}{@.extensionId})
+  }
+
+ChannelInfoExtTypes EXT-TYPE ::= {
+	{ EdcaParameterSet	IDENTIFIED BY c-EDCAparameterSet } |
+	{ ChannelAccess80211 IDENTIFIED BY c-ChannelAccess },
+	...
+	}
+
+-- Routing Advertisement
+RoutingAdvertisement ::= SEQUENCE {
+	lifetime	RouterLifetime,
+	ipPrefix	IpV6Prefix,
+	ipPrefixLength	IpV6PrefixLength,
+	defaultGateway	IPv6Address,
+	primaryDns	IPv6Address,
+	extensions	RoutAdvertExts
+	}
+
+RouterLifetime ::= INTEGER (0..65535)
+
+IpV6Prefix ::= OCTET STRING (SIZE (16))
+
+IpV6PrefixLength ::= INTEGER (0..255)
+
+-- Routing Advertisement extensions
+RoutAdvertExts ::= SEQUENCE OF RoutAdvertExt
+
+-- RoutAdvertExt ::= Extension {{RoutAdvertExtTypes}}
+RoutAdvertExt ::= SEQUENCE {
+  extensionId EXT-TYPE.&extRef({RoutAdvertExtTypes}),
+  value   EXT-TYPE.&ExtValue({RoutAdvertExtTypes}{@.extensionId})
+  }
+
+RoutAdvertExtTypes EXT-TYPE ::= {
+	{ SecondaryDns	IDENTIFIED BY c-SecondaryDNS } |
+	{ GatewayMacAddress	IDENTIFIED BY c-GatewayMACaddress },
+	...
+	}
+
+END
