@@ -19,8 +19,10 @@
 
 #include "libv2x_msgs/msg/dl_unit_data_x_indication.hpp"
 #include "libv2x_msgs/msg/wsm_wave_short_message_indication.hpp"
+#include "libv2x_msgs/msg/sec_unsecured_data_indication.hpp"
 
 #include "ShortMsgNpdu.h"
+#include "Ieee1609Dot2Data.h"
 
 namespace libv2x
 {
@@ -36,6 +38,15 @@ bool DLUnitDataIndication_To_WSMWaveShortMessageIndication(
     libv2x_msgs::msg::WSMWaveShortMessageIndication & msg);
 
 } // namespace ieee1609dot3
+
+namespace ieee1609dot2
+{
+
+bool WSMWaveShortMessageIndication_To_SecUnsecuredDataIndication(
+    const libv2x_msgs::msg::WSMWaveShortMessageIndication::SharedPtr ind,
+    libv2x_msgs::msg::SecUnsecuredDataIndication & msg);
+
+} // namespace ieee1609dot2
 
 } // namespace lIBv2x
 

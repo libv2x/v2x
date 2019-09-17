@@ -27,12 +27,13 @@ list(REMOVE_ITEM CODEC_OBJS
   "thirdparty/codec/converter-example.o"
   "thirdparty/codec/pdu_collection.o")
 
-add_library(v2x STATIC src/ieee1609dot3.cpp ${CODEC_OBJS})
+add_library(v2x STATIC
+  src/ieee1609dot3.cpp
+  src/ieee1609dot2.cpp
+  ${CODEC_OBJS})
 ament_target_dependencies(v2x libv2x_msgs codec)
 
-install(TARGETS
-  v2x
-  DESTINATION lib)
+install(TARGETS v2x DESTINATION lib)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

@@ -46,11 +46,24 @@ ament_target_dependencies(${PROJECT_NAME}_ieee1609dot3
   libv2x
 )
 
+# IEEE 1609.2 - Host
+add_executable(${PROJECT_NAME}_ieee1609dot2
+  src/ieee1609dot2.cpp
+)
+target_link_libraries(${PROJECT_NAME}_ieee1609dot2 ${LIBV2X})
+ament_target_dependencies(${PROJECT_NAME}_ieee1609dot2
+  rclcpp
+  libv2x_msgs
+  libv2x
+)
+
 install(TARGETS
   # IEEE 1609.3 - DevEmu
   ${PROJECT_NAME}_ieee1609dot3_devemu
   # IEEE 1609.3 - Host
   ${PROJECT_NAME}_ieee1609dot3
+  # IEEE 1609.2 - Host
+  ${PROJECT_NAME}_ieee1609dot2
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
