@@ -16,9 +16,6 @@
 
 #include "libv2x.hpp"
 
-using libv2x_msgs::msg::DLUnitDataXIndication;
-using libv2x_msgs::msg::WSMWaveShortMessageIndication;
-
 namespace libv2x
 {
 
@@ -60,8 +57,8 @@ uint64_t VarLengthNumber_To_UInt64(const VarLengthNumber_t * varLengthNumber)
 }
 
 bool DLUnitDataIndication_To_WSMWaveShortMessageIndication(
-    const DLUnitDataXIndication::SharedPtr ind,
-    WSMWaveShortMessageIndication & msg)
+    const libv2x_msgs::msg::DLUnitDataXIndication::SharedPtr ind,
+    libv2x_msgs::msg::WSMWaveShortMessageIndication & msg)
 {
   ShortMsgNpdu_t * dot3 = nullptr;
 
