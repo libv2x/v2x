@@ -33,7 +33,7 @@ namespace ieee1609dot3
 uint64_t VarLengthNumber_To_UInt64(
     const VarLengthNumber_t * varLengthNumber);
 
-bool DLUnitDataIndication_To_WSMWaveShortMessageIndication(
+bool DLUnitDataXIndication_To_WSMWaveShortMessageIndication(
     const libv2x_msgs::msg::DLUnitDataXIndication::SharedPtr ind,
     libv2x_msgs::msg::WSMWaveShortMessageIndication & msg);
 

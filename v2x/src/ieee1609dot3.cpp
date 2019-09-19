@@ -27,7 +27,7 @@ using libv2x_msgs::msg::DLUnitDataXIndication;
 using libv2x_msgs::msg::WSMWaveShortMessageIndication;
 
 using libv2x::ieee1609dot3
-  ::DLUnitDataIndication_To_WSMWaveShortMessageIndication;
+  ::DLUnitDataXIndication_To_WSMWaveShortMessageIndication;
 
 class Ieee1609Dot3 : public rclcpp::Node
 {
@@ -54,7 +54,7 @@ private:
 
     auto msg = WSMWaveShortMessageIndication();
 
-    if (DLUnitDataIndication_To_WSMWaveShortMessageIndication(ind, msg))
+    if (DLUnitDataXIndication_To_WSMWaveShortMessageIndication(ind, msg))
     {
       RCLCPP_DEBUG(this->get_logger(), "%u %" PRIu64 " %zu",
         msg.wsmp_version, msg.provider_service_identifier, msg.data.size());
