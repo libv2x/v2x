@@ -23,7 +23,7 @@
 |      | WME-AddressChange.request              |              |         |        |           |
 |      | WME-AddressChange.confirm              |              |         |        |           |
 | LSAP | DL-UNITDATA.request                    | IEEE 802.2   |         |        | IPv6      |
-|      | DL-UNITDATA.indication                 |              |         |        | (0x88DD)  |
+|      | DL-UNITDATA.indication                 |              |         |        | (0x86DD)  |
 |      | DL-UNITDATAX.request                   | IEEE 1609.3  |         |        | WSMP      |
 |      | DL-UNITDATAX.indication                |              | O       | O      | (0x88DC)  |
 | MLME | MLMEX-DELETETXPROFILE                  | IEEE 1609.4  |         |        |           |
