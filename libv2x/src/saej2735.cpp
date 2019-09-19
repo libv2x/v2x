@@ -79,7 +79,7 @@ bool DLUnitDataXIndication_To_MsgFrameIndication(
       return false;
     }
 
-    msg.msg_id = (*((uint16_t *)&msg.msg_frame[0])) & 0x7FFF;
+    msg.msg_id = ((opaque->buf[0] & 0x7F) << 8) | opaque->buf[1];
     msg.msg_frame.resize(opaque->size);
     memcpy(&msg.msg_frame[0], opaque->buf, opaque->size);
   }
@@ -96,10 +96,12 @@ bool DLUnitDataXIndication_To_MsgFrameIndication(
       return false;
     }
 
-    msg.msg_id = (*((uint16_t *)&msg.msg_frame[0])) & 0x7FFF;
+    msg.msg_id = ((opaque->buf[0] & 0x7F) << 8) | opaque->buf[1];
     msg.msg_frame.resize(opaque->size);
     memcpy(&msg.msg_frame[0], opaque->buf, opaque->size);
   }
+  // EncryptedData & SignedCertificateRequest
+  // else { }
 
   ASN_STRUCT_FREE(asn_DEF_Ieee1609Dot2Data, dot2);
   ASN_STRUCT_FREE(asn_DEF_ShortMsgNpdu, dot3);
@@ -143,7 +145,7 @@ bool WSMWaveShortMessageIndication_To_MsgFrameIndication(
       return false;
     }
 
-    msg.msg_id = (*((uint16_t *)&msg.msg_frame[0])) & 0x7FFF;
+    msg.msg_id = ((opaque->buf[0] & 0x7F) << 8) | opaque->buf[1];
     msg.msg_frame.resize(opaque->size);
     memcpy(&msg.msg_frame[0], opaque->buf, opaque->size);
   }
@@ -159,7 +161,7 @@ bool WSMWaveShortMessageIndication_To_MsgFrameIndication(
       return false;
     }
 
-    msg.msg_id = (*((uint16_t *)&msg.msg_frame[0])) & 0x7FFF;
+    msg.msg_id = ((opaque->buf[0] & 0x7F) << 8) | opaque->buf[1];
     msg.msg_frame.resize(opaque->size);
     memcpy(&msg.msg_frame[0], opaque->buf, opaque->size);
   }
@@ -181,7 +183,7 @@ bool SecUnsecuredDataIndication_To_MsgFrameIndication(
   }
 
   msg.msg_version = 5;
-  msg.msg_id = (*((uint16_t *)&msg.msg_frame[0])) & 0x7FFF;
+  msg.msg_id = ((ind->unsecured_data[0] & 0x7F) << 8) | ind->unsecured_data[1];
   msg.msg_frame.resize(len);
   memcpy(&msg.msg_frame[0], &ind->unsecured_data[0], len);
 
