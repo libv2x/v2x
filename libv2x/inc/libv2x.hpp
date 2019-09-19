@@ -20,9 +20,11 @@
 #include "libv2x_msgs/msg/dl_unit_data_x_indication.hpp"
 #include "libv2x_msgs/msg/wsm_wave_short_message_indication.hpp"
 #include "libv2x_msgs/msg/sec_unsecured_data_indication.hpp"
+#include "libv2x_msgs/msg/msg_frame_indication.hpp"
 
 #include "ShortMsgNpdu.h"
 #include "Ieee1609Dot2Data.h"
+#include "MessageFrame.h"
 
 namespace libv2x
 {
@@ -51,6 +53,23 @@ bool WSMWaveShortMessageIndication_To_SecUnsecuredDataIndication(
     libv2x_msgs::msg::SecUnsecuredDataIndication & msg);
 
 } // namespace ieee1609dot2
+
+namespace saej2735
+{
+
+bool DLUnitDataXIndication_To_MsgFrameIndication(
+    const libv2x_msgs::msg::DLUnitDataXIndication::SharedPtr ind,
+    libv2x_msgs::msg::MsgFrameIndication & msg);
+
+bool WSMWaveShortMessageIndication_To_MsgFrameIndication(
+    const libv2x_msgs::msg::WSMWaveShortMessageIndication::SharedPtr ind,
+    libv2x_msgs::msg::MsgFrameIndication & msg);
+
+bool SecUnsecuredDataIndication_To_MsgFrameIndication(
+    const libv2x_msgs::msg::SecUnsecuredDataIndication::SharedPtr ind,
+    libv2x_msgs::msg::MsgFrameIndication & msg);
+
+} // namespace saej2735
 
 } // namespace lIBv2x
 

@@ -39,4 +39,5 @@
 | Sec  | Sec-SignedData                         | IEEE 1609.2  |         |        |           |
 |      | Sec-SignedDataVerification             |              |         |        |           |
 |      | Sec-SecureDataPreprocessing            |              |         |        |           |
-|      | Sec-UnsecuredData.indication           |              |         | O      |           |
+|      | Sec-UnsecuredData.indication           |              | O       | O      |           |
+| Msg  | Msg-Frame.indication                   | SAE J2735    |         | O      |           |

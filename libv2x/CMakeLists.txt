@@ -30,6 +30,7 @@ list(REMOVE_ITEM CODEC_OBJS
 add_library(v2x STATIC
   src/ieee1609dot3.cpp
   src/ieee1609dot2.cpp
+  src/saej2735.cpp
   ${CODEC_OBJS})
 ament_target_dependencies(v2x libv2x_msgs codec)
 

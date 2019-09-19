@@ -26,6 +26,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/ieee1609dot3/WSMWaveShortMessageIndication.msg"
   "msg/ieee1609dot3/DLUnitDataXIndication.msg"
   "msg/ieee1609dot2/SecUnsecuredDataIndication.msg"
+  "msg/saej2735/MsgFrameIndication.msg"
   DEPENDENCIES builtin_interfaces
 )
 
