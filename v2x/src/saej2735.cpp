@@ -35,10 +35,10 @@ using libv2x::saej2735
 class SaeJ2735 : public rclcpp::Node
 {
 public:
-  SaeJ2735() : Node("ieee1609dot2"), m_qos(rclcpp::KeepLast(10))
+  SaeJ2735() : Node("saej2735"), m_qos(rclcpp::KeepLast(10))
   {
     m_dl_sub = this->create_subscription<DLUnitDataXIndication>(
-      "IEEE1609Dot3/DLUnitDataXIndication/Indication",
+      "IEEE1609Dot3/DLUnitDataX/Indication",
       m_qos, std::bind(&SaeJ2735::dot3_ind, this, _1));
 
     m_wsm_sub = this->create_subscription<WSMWaveShortMessageIndication>(
@@ -46,7 +46,7 @@ public:
       m_qos, std::bind(&SaeJ2735::dot2_ind, this, _1));
 
     m_sec_sub = this->create_subscription<SecUnsecuredDataIndication>(
-      "IEEE1609Dot2/SecUnsecuredDataIndication/Indication",
+      "IEEE1609Dot2/SecUnsecuredData/Indication",
       m_qos, std::bind(&SaeJ2735::j2735_ind, this, _1));
 
     m_msg_pub = this->create_publisher<MsgFrameIndication>(
@@ -62,14 +62,14 @@ private:
 
   void dot3_ind(const DLUnitDataXIndication::SharedPtr ind) const
   {
-    RCLCPP_DEBUG(this->get_logger(), "%ld.%09ld", ind->msg_header.ts.sec,
+    RCLCPP_DEBUG(this->get_logger(), "dot3 %ld.%09ld", ind->msg_header.ts.sec,
       ind->msg_header.ts.nanosec);
 
     auto msg = MsgFrameIndication();
 
     if (DLUnitDataXIndication_To_MsgFrameIndication(ind, msg))
     {
-      RCLCPP_DEBUG(this->get_logger(), "%u %u %zu",
+      RCLCPP_DEBUG(this->get_logger(), "dot3 %u %u %zu",
         msg.msg_version, msg.msg_id, msg.msg_frame.size());
 
       msg.msg_header = ind->msg_header;
@@ -79,14 +79,14 @@ private:
 
   void dot2_ind(const WSMWaveShortMessageIndication::SharedPtr ind) const
   {
-    RCLCPP_DEBUG(this->get_logger(), "%ld.%09ld", ind->msg_header.ts.sec,
+    RCLCPP_DEBUG(this->get_logger(), "dot2 %ld.%09ld", ind->msg_header.ts.sec,
       ind->msg_header.ts.nanosec);
 
     auto msg = MsgFrameIndication();
 
     if (WSMWaveShortMessageIndication_To_MsgFrameIndication(ind, msg))
     {
-      RCLCPP_DEBUG(this->get_logger(), "%u %u %zu",
+      RCLCPP_DEBUG(this->get_logger(), "dot2 %u %u %zu",
         msg.msg_version, msg.msg_id, msg.msg_frame.size());
 
       msg.msg_header = ind->msg_header;
@@ -96,14 +96,14 @@ private:
 
   void j2735_ind(const SecUnsecuredDataIndication::SharedPtr ind) const
   {
-    RCLCPP_DEBUG(this->get_logger(), "%ld.%09ld", ind->msg_header.ts.sec,
+    RCLCPP_DEBUG(this->get_logger(), "j2735 %ld.%09ld", ind->msg_header.ts.sec,
       ind->msg_header.ts.nanosec);
 
     auto msg = MsgFrameIndication();
 
     if (SecUnsecuredDataIndication_To_MsgFrameIndication(ind, msg))
     {
-      RCLCPP_DEBUG(this->get_logger(), "%u %u %zu",
+      RCLCPP_DEBUG(this->get_logger(), "j2735 %u %u %zu",
         msg.msg_version, msg.msg_id, msg.msg_frame.size());
 
       msg.msg_header = ind->msg_header;

@@ -43,7 +43,7 @@ public:
       m_qos, std::bind(&Ieee1609Dot2::dot2_ind, this, _1));
 
     m_sec_pub = this->create_publisher<SecUnsecuredDataIndication>(
-      "IEEE1609Dot2/SecUnsecuredDataIndication/Indication", m_qos);
+      "IEEE1609Dot2/SecUnsecuredData/Indication", m_qos);
   }
 
 private:
@@ -54,14 +54,14 @@ private:
 
   void dot3_ind(const DLUnitDataXIndication::SharedPtr ind) const
   {
-    RCLCPP_DEBUG(this->get_logger(), "%ld.%09ld", ind->msg_header.ts.sec,
+    RCLCPP_DEBUG(this->get_logger(), "dot3 %ld.%09ld", ind->msg_header.ts.sec,
       ind->msg_header.ts.nanosec);
 
     auto msg = SecUnsecuredDataIndication();
 
     if (DLUnitDataXIndication_To_SecUnsecuredDataIndication(ind, msg))
     {
-      RCLCPP_DEBUG(this->get_logger(), "%u %zu",
+      RCLCPP_DEBUG(this->get_logger(), "dot3 %u %zu",
         msg.protocol_version, msg.unsecured_data.size());
 
       msg.msg_header = ind->msg_header;
@@ -71,14 +71,14 @@ private:
 
   void dot2_ind(const WSMWaveShortMessageIndication::SharedPtr ind) const
   {
-    RCLCPP_DEBUG(this->get_logger(), "%ld.%09ld", ind->msg_header.ts.sec,
+    RCLCPP_DEBUG(this->get_logger(), "dot2 %ld.%09ld", ind->msg_header.ts.sec,
       ind->msg_header.ts.nanosec);
 
     auto msg = SecUnsecuredDataIndication();
 
     if (WSMWaveShortMessageIndication_To_SecUnsecuredDataIndication(ind, msg))
     {
-      RCLCPP_DEBUG(this->get_logger(), "%u %zu",
+      RCLCPP_DEBUG(this->get_logger(), "dot2 %u %zu",
         msg.protocol_version, msg.unsecured_data.size());
 
       msg.msg_header = ind->msg_header;
