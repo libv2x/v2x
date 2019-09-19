@@ -20,9 +20,12 @@
 
 using std::placeholders::_1;
 
+using libv2x_msgs::msg::DLUnitDataXIndication;
 using libv2x_msgs::msg::WSMWaveShortMessageIndication;
 using libv2x_msgs::msg::SecUnsecuredDataIndication;
 
+using libv2x::ieee1609dot2
+  ::DLUnitDataXIndication_To_SecUnsecuredDataIndication;
 using libv2x::ieee1609dot2
   ::WSMWaveShortMessageIndication_To_SecUnsecuredDataIndication;
 
@@ -31,6 +34,10 @@ class Ieee1609Dot2 : public rclcpp::Node
 public:
   Ieee1609Dot2() : Node("ieee1609dot2"), m_qos(rclcpp::KeepLast(10))
   {
+    m_dl_sub = this->create_subscription<DLUnitDataXIndication>(
+      "IEEE1609Dot3/DLUnitDataX/Indication",
+      m_qos, std::bind(&Ieee1609Dot2::dot3_ind, this, _1));
+
     m_wsm_sub = this->create_subscription<WSMWaveShortMessageIndication>(
       "IEEE1609Dot3/WSMWaveShortMessage/Indication",
       m_qos, std::bind(&Ieee1609Dot2::dot2_ind, this, _1));
@@ -40,9 +47,27 @@ public:
   }
 
 private:
+  rclcpp::Subscription<DLUnitDataXIndication>::SharedPtr m_dl_sub;
   rclcpp::Subscription<WSMWaveShortMessageIndication>::SharedPtr m_wsm_sub;
   rclcpp::Publisher<SecUnsecuredDataIndication>::SharedPtr m_sec_pub;
   rclcpp::SensorDataQoS m_qos;
+
+  void dot3_ind(const DLUnitDataXIndication::SharedPtr ind) const
+  {
+    RCLCPP_DEBUG(this->get_logger(), "%ld.%09ld", ind->msg_header.ts.sec,
+      ind->msg_header.ts.nanosec);
+
+    auto msg = SecUnsecuredDataIndication();
+
+    if (DLUnitDataXIndication_To_SecUnsecuredDataIndication(ind, msg))
+    {
+      RCLCPP_DEBUG(this->get_logger(), "%u %zu",
+        msg.protocol_version, msg.unsecured_data.size());
+
+      msg.msg_header = ind->msg_header;
+      m_sec_pub->publish(msg);
+    }
+  }
 
   void dot2_ind(const WSMWaveShortMessageIndication::SharedPtr ind) const
   {

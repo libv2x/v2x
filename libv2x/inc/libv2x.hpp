@@ -42,6 +42,10 @@ bool DLUnitDataXIndication_To_WSMWaveShortMessageIndication(
 namespace ieee1609dot2
 {
 
+bool DLUnitDataXIndication_To_SecUnsecuredDataIndication(
+    const libv2x_msgs::msg::DLUnitDataXIndication::SharedPtr ind,
+    libv2x_msgs::msg::SecUnsecuredDataIndication & msg);
+
 bool WSMWaveShortMessageIndication_To_SecUnsecuredDataIndication(
     const libv2x_msgs::msg::WSMWaveShortMessageIndication::SharedPtr ind,
     libv2x_msgs::msg::SecUnsecuredDataIndication & msg);
