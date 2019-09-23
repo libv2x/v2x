@@ -68,6 +68,17 @@ ament_target_dependencies(${PROJECT_NAME}_saej2735
   libv2x
 )
 
+# SAE J2945.1 =  Host
+add_executable(${PROJECT_NAME}_saej2945dot1
+  src/saej2945dot1.cpp
+)
+target_link_libraries(${PROJECT_NAME}_saej2945dot1 ${LIBV2X})
+ament_target_dependencies(${PROJECT_NAME}_saej2945dot1
+  rclcpp
+  libv2x_msgs
+  libv2x
+)
+
 install(TARGETS
   # IEEE 1609.3 - DevEmu
   ${PROJECT_NAME}_ieee1609dot3_devemu
@@ -77,6 +88,8 @@ install(TARGETS
   ${PROJECT_NAME}_ieee1609dot2
   # SAE J2735 - Host
   ${PROJECT_NAME}_saej2735
+  # SAE J2945.1 - Host
+  ${PROJECT_NAME}_saej2945dot1
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)

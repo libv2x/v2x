@@ -22,6 +22,8 @@
 #include "libv2x_msgs/msg/sec_unsecured_data_indication.hpp"
 #include "libv2x_msgs/msg/msg_frame_indication.hpp"
 
+#include "libv2x_msgs/msg/poti_pos_and_time_indication.hpp"
+
 #include "ShortMsgNpdu.h"
 #include "Ieee1609Dot2Data.h"
 #include "MessageFrame.h"

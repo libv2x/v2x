@@ -41,3 +41,5 @@
 |      | Sec-SecureDataPreprocessing            |              |         |        |           |
 |      | Sec-UnsecuredData.indication           |              | O       | O      |           |
 | Msg  | Msg-Frame.indication                   | SAE J2735    |         | O      |           |
+|      |                                        |              |         |        |           |
+| POTI | Poti-PosAndTime.indication             | -            |         | O      |           |
