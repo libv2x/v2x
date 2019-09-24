@@ -14,4 +14,4 @@
 # limitations under the License.
 # 
 builtin_interfaces/Time ts
-uint64 seq
+uint32 seq
