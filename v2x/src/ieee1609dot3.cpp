@@ -49,8 +49,11 @@ private:
 
   void dot3_ind(const DLUnitDataXIndication::SharedPtr ind) const
   {
-    RCLCPP_DEBUG(this->get_logger(), "%ld.%09ld", ind->msg_header.ts.sec,
-      ind->msg_header.ts.nanosec);
+    RCLCPP_DEBUG(this->get_logger(), "%ld.%09ld %u %zu %zu %zu %u",
+      ind->msg_header.ts.sec, ind->msg_header.ts.nanosec,
+      ind->msg_header.seq,
+      ind->source_address.size(), ind->destination_address.size(),
+      ind->data.size(), ind->priority);
 
     auto msg = WSMWaveShortMessageIndication();
 
