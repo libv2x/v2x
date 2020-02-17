@@ -72,7 +72,7 @@ private:
       RCLCPP_DEBUG(this->get_logger(), "dot3 %u %u %zu",
         msg.msg_version, msg.msg_id, msg.msg_frame.size());
 
-      msg.msg_header = ind->msg_header;
+      msg.msg_header  = ind->msg_header;
       m_msg_pub->publish(msg);
     }
   }
@@ -89,7 +89,7 @@ private:
       RCLCPP_DEBUG(this->get_logger(), "dot2 %u %u %zu",
         msg.msg_version, msg.msg_id, msg.msg_frame.size());
 
-      msg.msg_header = ind->msg_header;
+      msg.msg_header  = ind->msg_header;
       m_msg_pub->publish(msg);
     }
   }
@@ -107,6 +107,7 @@ private:
         msg.msg_version, msg.msg_id, msg.msg_frame.size());
 
       msg.msg_header = ind->msg_header;
+      msg.dot2_header = ind->dot2_header;
       m_msg_pub->publish(msg);
     }
   }

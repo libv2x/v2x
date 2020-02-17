@@ -1,5 +1,5 @@
 #
-# Copyright 2019 Steve Kwon <steve@libv2x.org>
+# Copyright 2020 Steve Kwon <steve@libv2x.org>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,10 +12,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-libv2x_msgs/MsgHeader  msg_header
-libv2x_msgs/Dot2Header dot2_header
-# Msg-Frame.indication, not in std.
-uint8         msg_version 5 # 5: 201603
-uint16        msg_id
-uint8[<=2302] msg_frame
+# 
+uint8 signer_identifier_type
+# uint8 UNSECURED=0
+# uint8 DIGEST=1
+# uint8 CERTIFICATE=2
+# uint8 SELF=3

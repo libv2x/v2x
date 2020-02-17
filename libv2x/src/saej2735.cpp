@@ -79,6 +79,8 @@ bool DLUnitDataXIndication_To_MsgFrameIndication(
       return false;
     }
 
+    msg.dot2_header.signer_identifier_type = 0;
+
     msg.msg_id = ((opaque->buf[0] & 0x7F) << 8) | opaque->buf[1];
     msg.msg_frame.resize(opaque->size);
     memcpy(&msg.msg_frame[0], opaque->buf, opaque->size);
@@ -94,6 +96,16 @@ bool DLUnitDataXIndication_To_MsgFrameIndication(
       ASN_STRUCT_FREE(asn_DEF_Ieee1609Dot2Data, dot2);
       ASN_STRUCT_FREE(asn_DEF_ShortMsgNpdu, dot3);
       return false;
+    }
+
+    if (signedData->signer.present == SignerIdentifier_PR_digest) {
+      msg.dot2_header.signer_identifier_type = 1;
+    }
+    else if (signedData->signer.present == SignerIdentifier_PR_certificate) {
+      msg.dot2_header.signer_identifier_type = 2;
+    }
+    else { // SignerIdentifier_PR_self
+      msg.dot2_header.signer_identifier_type = 3;
     }
 
     msg.msg_id = ((opaque->buf[0] & 0x7F) << 8) | opaque->buf[1];
@@ -145,6 +157,8 @@ bool WSMWaveShortMessageIndication_To_MsgFrameIndication(
       return false;
     }
 
+    msg.dot2_header.signer_identifier_type = 0;
+
     msg.msg_id = ((opaque->buf[0] & 0x7F) << 8) | opaque->buf[1];
     msg.msg_frame.resize(opaque->size);
     memcpy(&msg.msg_frame[0], opaque->buf, opaque->size);
@@ -159,6 +173,16 @@ bool WSMWaveShortMessageIndication_To_MsgFrameIndication(
     {
       ASN_STRUCT_FREE(asn_DEF_Ieee1609Dot2Data, dot2);
       return false;
+    }
+
+    if (signedData->signer.present == SignerIdentifier_PR_digest) {
+      msg.dot2_header.signer_identifier_type = 1;
+    }
+    else if (signedData->signer.present == SignerIdentifier_PR_certificate) {
+      msg.dot2_header.signer_identifier_type = 2;
+    }
+    else { // SignerIdentifier_PR_self
+      msg.dot2_header.signer_identifier_type = 3;
     }
 
     msg.msg_id = ((opaque->buf[0] & 0x7F) << 8) | opaque->buf[1];

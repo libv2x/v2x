@@ -25,6 +25,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/MsgHeader.msg"
   "msg/ieee1609dot3/WSMWaveShortMessageIndication.msg"
   "msg/ieee1609dot3/DLUnitDataXIndication.msg"
+  "msg/ieee1609dot2/Dot2Header.msg"
   "msg/ieee1609dot2/SecUnsecuredDataIndication.msg"
   "msg/saej2735/MsgFrameIndication.msg"
   "msg/poti/PotiPosAndTimeIndication.msg"

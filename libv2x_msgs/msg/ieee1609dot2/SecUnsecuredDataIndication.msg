@@ -13,7 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-libv2x_msgs/MsgHeader msg_header
+libv2x_msgs/MsgHeader  msg_header
+libv2x_msgs/Dot2Header dot2_header
 # Sec-UnsecuredData.indication, not in std.
 uint8         protocol_version
 uint8[<=2302] unsecured_data

@@ -1,5 +1,5 @@
 #
-# Copyright 2019 Steve Kwon <steve@libv2x.org>
+# Copyright 2019-2020 Steve Kwon <steve@libv2x.org>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,3 +15,4 @@
 # 
 builtin_interfaces/Time ts
 uint32 seq
+uint32 did # device id

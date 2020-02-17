@@ -72,6 +72,9 @@ bool DLUnitDataXIndication_To_SecUnsecuredDataIndication(
   if (dot2->content->present == Ieee1609Dot2Content_PR_unsecuredData)
   {
     const Opaque_t *opaque = &dot2->content->choice.unsecuredData;
+
+    msg.dot2_header.signer_identifier_type = 0;
+
     msg.unsecured_data.resize(opaque->size);
     memcpy(&msg.unsecured_data[0], opaque->buf, opaque->size);
   }
@@ -81,6 +84,17 @@ bool DLUnitDataXIndication_To_SecUnsecuredDataIndication(
     const Ieee1609Dot2Data_t * ieee1609Dot2Data =
       signedData->tbsData->payload->data;
     const Opaque_t * opaque = &ieee1609Dot2Data->content->choice.unsecuredData;
+
+    if (signedData->signer.present == SignerIdentifier_PR_digest) {
+      msg.dot2_header.signer_identifier_type = 1;
+    }
+    else if (signedData->signer.present == SignerIdentifier_PR_certificate) {
+      msg.dot2_header.signer_identifier_type = 2;
+    }
+    else { // SignerIdentifier_PR_self
+      msg.dot2_header.signer_identifier_type = 3;
+    }
+
     msg.unsecured_data.resize(opaque->size);
     memcpy(&msg.unsecured_data[0], opaque->buf, opaque->size);
   }
@@ -123,6 +137,9 @@ bool WSMWaveShortMessageIndication_To_SecUnsecuredDataIndication(
   if (dot2->content->present == Ieee1609Dot2Content_PR_unsecuredData)
   {
     const Opaque_t *opaque = &dot2->content->choice.unsecuredData;
+
+    msg.dot2_header.signer_identifier_type = 0;
+
     msg.unsecured_data.resize(opaque->size);
     memcpy(&msg.unsecured_data[0], opaque->buf, opaque->size);
   }
@@ -132,6 +149,17 @@ bool WSMWaveShortMessageIndication_To_SecUnsecuredDataIndication(
     const Ieee1609Dot2Data_t * ieee1609Dot2Data =
       signedData->tbsData->payload->data;
     const Opaque_t * opaque = &ieee1609Dot2Data->content->choice.unsecuredData;
+
+    if (signedData->signer.present == SignerIdentifier_PR_digest) {
+      msg.dot2_header.signer_identifier_type = 1;
+    }
+    else if (signedData->signer.present == SignerIdentifier_PR_certificate) {
+      msg.dot2_header.signer_identifier_type = 2;
+    }
+    else { // SignerIdentifier_PR_self
+      msg.dot2_header.signer_identifier_type = 3;
+    }
+
     msg.unsecured_data.resize(opaque->size);
     memcpy(&msg.unsecured_data[0], opaque->buf, opaque->size);
   }
