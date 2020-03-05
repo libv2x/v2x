@@ -74,7 +74,6 @@ bool DLUnitDataXIndication_To_SecUnsecuredDataIndication(
     const Opaque_t *opaque = &dot2->content->choice.unsecuredData;
 
     msg.dot2_header.signer_identifier_type = 0;
-
     msg.unsecured_data.resize(opaque->size);
     memcpy(&msg.unsecured_data[0], opaque->buf, opaque->size);
   }
@@ -87,9 +86,25 @@ bool DLUnitDataXIndication_To_SecUnsecuredDataIndication(
 
     if (signedData->signer.present == SignerIdentifier_PR_digest) {
       msg.dot2_header.signer_identifier_type = 1;
+      msg.dot2_header.digest.resize(signedData->signer.choice.digest.size);
+      memcpy(&msg.dot2_header.digest[0],
+          signedData->signer.choice.digest.buf,
+          signedData->signer.choice.digest.size);
     }
     else if (signedData->signer.present == SignerIdentifier_PR_certificate) {
+      asn_enc_rval_t rval;
       msg.dot2_header.signer_identifier_type = 2;
+      msg.dot2_header.certificate.resize(512);
+      rval.encoded = -1;
+      rval = uper_encode_to_buffer(&asn_DEF_SequenceOfCertificate, NULL,
+          &signedData->signer.choice.certificate,
+          &msg.dot2_header.certificate[0], 512);
+      if (rval.encoded < 0) {
+        msg.dot2_header.certificate.clear(); // TODO:
+      }
+      else {
+        msg.dot2_header.certificate.resize(rval.encoded >> 3);
+      }
     }
     else { // SignerIdentifier_PR_self
       msg.dot2_header.signer_identifier_type = 3;

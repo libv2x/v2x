@@ -18,3 +18,5 @@ uint8 signer_identifier_type
 # uint8 DIGEST=1
 # uint8 CERTIFICATE=2
 # uint8 SELF=3
+uint8[<=64]  digest      # HashedId8
+uint8[<=512] certificate # bytes array of SequenceOfCertificate
