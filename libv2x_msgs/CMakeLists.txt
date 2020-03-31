@@ -29,6 +29,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/ieee1609dot2/SecUnsecuredDataIndication.msg"
   "msg/saej2735/MsgFrameIndication.msg"
   "msg/poti/PotiPosAndTimeIndication.msg"
+  "msg/vinfo/VInfoVehicleInfoIndication.msg"
   DEPENDENCIES builtin_interfaces
 )
 
